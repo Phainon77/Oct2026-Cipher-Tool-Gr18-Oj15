@@ -1,0 +1,29 @@
+name: Kiem Tra Quy Uoc Code
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-format-and-code:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Lay code tu Github ve
+      uses: actions/checkout@v4
+
+    - name: Cai dat cong cu quet code
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format cppcheck
+
+    - name: Kiem tra thut le va dinh dang (4 spaces)
+      run: |
+        # Kiem tra xem code co dung chuan .clang-format khong
+        find . -name "*.c" -o -name "*.h" | xargs clang-format --dry-run --Werror
+
+    - name: Kiem tra bien toan cuc va loi logic (Cppcheck)
+      run: |
+        # Quet lỗi bao gom viec dung bien toan cuc sai quy dinh
+        cppcheck --error-exitcode=1 --enable=warning,style .
